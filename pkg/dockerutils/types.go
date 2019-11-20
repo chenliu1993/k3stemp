@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	kubeCfgFile    = "/tmp/k3s/config"
+	kubeCfgFile    = "/tmp/k3s/config/kubeconfig.yaml"
 	k3sServerFiles = "/tmp/k3s/files"
 )
 
@@ -14,8 +14,8 @@ const (
 type ContainerCmd struct {
 	ID      string // the container name or ID
 	Command string
-	Args    []string
-	Env     []string
+	Detach  bool
+	// Args    []string
 	Image   string
 }
 

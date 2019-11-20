@@ -6,13 +6,13 @@ import (
 )
 
 // RunContainer used for wrap exec run
-func RunContainer(containerID string, env []string, image string) error {
+func RunContainer(containerID string, detach bool, image string) error {
 	log.Debug("generating cmd")
 	ctrCmd := docker.ContainerCmd{
 		ID:      containerID,
 		Command: "docker",
 	}
-	ctrCmd.Env = env
+	ctrCmd.Detach = detach
 	ctrCmd.Image = image
 	return ctrCmd.Run()
 }

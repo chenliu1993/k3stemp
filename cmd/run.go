@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"strings"
 	"context"
 
 	"github.com/chenliu1993/k3scli/pkg/utils"
@@ -17,16 +18,16 @@ var RunCommand = cli.Command{
 	on your host.`,
 	Description: `The run command allows you to start a new k3sbase/k3snode container`,
 	Flags: []cli.Flag{
-		cli.StringFlag{
+		&cli.StringFlag{
 			Name:  "label, l",
 			Value: "",
 			Usage: `label used for docker run --label used for distinguishing from server to worker (primary)`,
 		},
-		cli.StringSliceFlag{
-			Name:  "env, e",
+		&cli.BoolFlag{
+			Name:  "detach, d",
 			Usage: `environment used for docker run --env`,
 		},
-		cli.StringFlag{
+		&cli.StringFlag{
 			Name:  "image",
 			Usage: `image used`,
 		},
@@ -38,19 +39,26 @@ var RunCommand = cli.Command{
 		}
 		return run(ctx, context.Args().First(),
 			context.String("label"),
-			context.StringSlice("env"),
+			context.Bool("detach"),
 			context.String("image"),
 		)
 	},
 }
 
-func run(ctx context.Context, containerID, label string, env []string, image string) error {
+func run(ctx context.Context, containerID, label string, detach bool, image string) error {
 	log.Debug("begin running container")
-	if env == nil {
-		log.Fatal("env not set")
+	if label == "" {
+		log.Debug("role of container is not set, default to server")
+		label = "server"
 	}
 	if image == "" {
 		log.Fatal("k3s image not set")
 	}
-	return utils.RunContainer(containerID, env, image)
+	if label == "server" && strings.Index(image, "base") != -1 {
+		log.Fatal("base image cannot serve as server")
+	}
+	if label == "worker" && strings.Index(image, "node") != -1 {
+		log.Fatal("node image cannot serve as worker")
+	}
+	return utils.RunContainer(containerID, detach, image)
 }

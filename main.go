@@ -12,19 +12,19 @@ import (
 	"github.com/urfave/cli"
 )
 
-var runtimeCommands = []cli.Command{
-	cmd.RunCommand,
+var runtimeCommands = []*cli.Command{
+	&cmd.RunCommand,
 }
 
-func beforeSubcommands(c *cli.Context) error {
-	loglevel := c.GlobalString("log-level")
-	level, err := log.ParseLevel(loglevel)
-	if err != nil {
-		return err
-	}
-	log.SetLevel(level)
-	return nil
-}
+// func beforeSubcommands(c *cli.Context) error {
+// 	loglevel := c.
+// 	level, err := log.ParseLevel(loglevel)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	log.SetLevel(level)
+// 	return nil
+// }
 
 func main() {
 	c := make(chan os.Signal)
@@ -37,12 +37,12 @@ func main() {
 	ctx := context.Background()
 	cliApp := cli.NewApp()
 	cliApp.Commands = runtimeCommands
-	cliApp.Before = beforeSubcommands
+	// cliApp.Before = beforeSubcommands
 	cliApp.Metadata = map[string]interface{}{
 		"context": ctx,
 	}
 	cliApp.Flags = []cli.Flag{
-		cli.StringFlag{
+		&cli.StringFlag{
 			Name:  "log-level",
 			Value: "info",
 		},
