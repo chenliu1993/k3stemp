@@ -1,16 +1,18 @@
 package utils
 
-// docker "github.com/chenliu1993/pkg/dockerutils"
+import (
+	docker "github.com/chenliu1993/k3scli/pkg/dockerutils"
+	log "github.com/sirupsen/logrus"
+)
 
-// func RunContainer(containerID string, env []string) error {
-// log.Debug("generating cmd")
-// ctrCmd := docker.ContainerCmd{
-// 	ID:      containerID,
-// 	Command: "docker",
-// }
-// ctrCmd.Env = env
-// log.Debug("generating args")
-// ctrCmd.Args = []string{}
-
-// ctrCmd.Args = append(ctrCmd.Args, args...)
-// }
+// RunContainer used for wrap exec run
+func RunContainer(containerID string, env []string, image string) error {
+	log.Debug("generating cmd")
+	ctrCmd := docker.ContainerCmd{
+		ID:      containerID,
+		Command: "docker",
+	}
+	ctrCmd.Env = env
+	ctrCmd.Image = image
+	return ctrCmd.Run()
+}

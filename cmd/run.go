@@ -1,11 +1,11 @@
 package cmd
 
 import (
-	"fmt"
 	"context"
-	"github.com/urfave/cli"
-	log "github.com/sirupsen/logrus"
 
+	"github.com/chenliu1993/k3scli/pkg/utils"
+	log "github.com/sirupsen/logrus"
+	"github.com/urfave/cli"
 )
 
 // RunCommand wraps docker run for k3scli
@@ -22,10 +22,13 @@ var RunCommand = cli.Command{
 			Value: "",
 			Usage: `label used for docker run --label used for distinguishing from server to worker (primary)`,
 		},
-		cli.StringFlag{
+		cli.StringSliceFlag{
 			Name:  "env, e",
-			Value: "",
 			Usage: `environment used for docker run --env`,
+		},
+		cli.StringFlag{
+			Name:  "image",
+			Usage: `image used`,
 		},
 	},
 	Action: func(context *cli.Context) error {
@@ -34,17 +37,20 @@ var RunCommand = cli.Command{
 			return err
 		}
 		return run(ctx, context.Args().First(),
-			context.String("env"),
+			context.String("label"),
+			context.StringSlice("env"),
+			context.String("image"),
 		)
 	},
 }
 
-func run(ctx context.Context, containerID string, env string) error {
+func run(ctx context.Context, containerID, label string, env []string, image string) error {
 	log.Debug("begin running container")
-	if env == "" {
+	if env == nil {
 		log.Fatal("env not set")
 	}
-	fmt.Printf(env)
-	// return utils.RunContainer(containerID, env)
-	return nil
+	if image == "" {
+		log.Fatal("k3s image not set")
+	}
+	return utils.RunContainer(containerID, env, image)
 }

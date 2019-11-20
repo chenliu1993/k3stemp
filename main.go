@@ -1,19 +1,19 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
-	"fmt"
-	
+
+	"github.com/chenliu1993/k3scli/cmd"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
-	"github.com/chenliu1993/k3scli/cmd"
 )
 
-
 var runtimeCommands = []cli.Command{
-	cmds.RunCLICommand,
+	cmd.RunCommand,
 }
 
 func beforeSubcommands(c *cli.Context) error {
@@ -26,7 +26,7 @@ func beforeSubcommands(c *cli.Context) error {
 	return nil
 }
 
-fund main() {
+func main() {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {

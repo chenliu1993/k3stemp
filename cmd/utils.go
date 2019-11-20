@@ -8,7 +8,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-
 func cliContextToContext(c *cli.Context) (context.Context, error) {
 	log.Debug("copy ctx")
 	if c == nil {
