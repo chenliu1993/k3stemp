@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -18,10 +19,14 @@ func (c *ContainerCmd) Run() error {
 		args = append(args, "-e", env)
 	}
 	if err := checkDir(k3sServerFiles); err != nil {
+		return fmt.Errorf("kubeserver path failed")
+	}
+	if err := checkDir(kubeCfgFile); err != nil {
 		return fmt.Errorf("kubeconfig path failed")
 	}
-
 	args = append(args, "-p", "6444:6443",
+		"-e", "K3S_KUBECONFIG_OUTPUT="+filepath.Join(kubeCfgFile, "kubeconfig.yaml"),
+		"-e", "K3S_KUBECONFIG_MODE=666",
 		"-v", "/lib/modules:/lib/modules",
 		"-v", k3sServerFiles+":/var/lib/rancher/k3s",
 		"--name", c.ID)
