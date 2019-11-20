@@ -14,6 +14,7 @@ import (
 
 var runtimeCommands = []*cli.Command{
 	&cmd.RunCommand,
+	&cmd.JoinCommand,
 }
 
 // func beforeSubcommands(c *cli.Context) error {
@@ -37,7 +38,6 @@ func main() {
 	ctx := context.Background()
 	cliApp := cli.NewApp()
 	cliApp.Commands = runtimeCommands
-	// cliApp.Before = beforeSubcommands
 	cliApp.Metadata = map[string]interface{}{
 		"context": ctx,
 	}
