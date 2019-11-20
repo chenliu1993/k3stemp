@@ -15,7 +15,7 @@ type ContainerCmd struct {
 	ID      string // the container name or ID
 	Command string
 	Detach  bool
-	// Args    []string
+	Args    []string
 	Image   string
 }
 

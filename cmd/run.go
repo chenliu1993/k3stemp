@@ -25,7 +25,7 @@ var RunCommand = cli.Command{
 		},
 		&cli.BoolFlag{
 			Name:  "detach, d",
-			Usage: `environment used for docker run --env`,
+			Usage: `run in detach mode or not`,
 		},
 		&cli.StringFlag{
 			Name:  "image",

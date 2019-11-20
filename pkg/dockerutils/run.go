@@ -9,6 +9,7 @@ import (
 )
 
 // Run uses docker run to actually run a container
+// expose hostport 6443 as default connect port
 func (c *ContainerCmd) Run() error {
 	args := []string{
 		"run",
@@ -23,7 +24,7 @@ func (c *ContainerCmd) Run() error {
 	if err := checkDir(kubeCfgFile); err != nil {
 		return fmt.Errorf("kubeconfig path failed")
 	}
-	args = append(args, "-p", "6444:6443",
+	args = append(args, "-p", "6443:6443",
 		"-e", "K3S_KUBECONFIG_OUTPUT="+kubeCfgFile,
 		"-e", "K3S_KUBECONFIG_MODE=666",
 		"-v", "/lib/modules:/lib/modules",
@@ -34,7 +35,7 @@ func (c *ContainerCmd) Run() error {
 	cmd := exec.Command(c.Command, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	log.Debug("begin run container")
+	log.Debug(fmt.Sprintf("begin run container %s", c.ID))
 	err := cmd.Run()
 	if err != nil {
 		log.Fatal(err)
