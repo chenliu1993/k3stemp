@@ -34,9 +34,13 @@ fund main() {
 		fmt.Println("exiting...")
 		//os.Exit(1)
 	}()
+	ctx := context.Background()
 	cliApp := cli.NewApp()
 	cliApp.Commands = runtimeCommands
 	cliApp.Before = beforeSubcommands
+	cliApp.Metadata = map[string]interface{}{
+		"context": ctx,
+	}
 	cliApp.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "log-level",

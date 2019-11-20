@@ -1,8 +1,11 @@
 package cmd
 
 import (
+	"fmt"
+	"context"
 	"github.com/urfave/cli"
 	log "github.com/sirupsen/logrus"
+
 )
 
 // RunCommand wraps docker run for k3scli
@@ -31,16 +34,17 @@ var RunCommand = cli.Command{
 			return err
 		}
 		return run(ctx, context.Args().First(),
-			context.String("label"),
 			context.String("env"),
 		)
 	},
 }
 
-func run(ctx cli.Context, containerID string, env []string) error {
+func run(ctx context.Context, containerID string, env string) error {
 	log.Debug("begin running container")
 	if env == "" {
 		log.Fatal("env not set")
 	}
-	return utils.RunContainer(containerID, env)
+	fmt.Printf(env)
+	// return utils.RunContainer(containerID, env)
+	return nil
 }
