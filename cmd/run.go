@@ -9,6 +9,12 @@ import (
 	"github.com/urfave/cli"
 )
 
+const (
+	// NODE_VERSION = "0.10"
+	NODE_VERSION = "allsetup"
+	NODE_IMAGE = "cliu2/k3snode:"+BASE_VERSION
+)
+
 // RunCommand wraps docker run for k3scli
 var RunCommand = cli.Command{
 	Name:  "run",
@@ -57,7 +63,8 @@ func run(ctx context.Context, containerID, label string, detach bool, image stri
 		label = "server"
 	}
 	if image == "" {
-		log.Fatal("k3s image not set")
+		log.Debug("k3s image not set, default to node")
+		image = NODE_IMAGE
 	}
 	if label == "server" && strings.Index(image, "base") != -1 {
 		log.Fatal("base image cannot serve as server")
