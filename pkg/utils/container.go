@@ -18,13 +18,14 @@ func RunContainer(containerID string, detach bool, image string, ports []string)
 	return ctrCmd.Run()
 }
 
-func Join(containerID, serverIP, token string, detach bool) error {
+func Join(containerID, serverIP, token string) error {
 	log.Debug("generating docker exec cmd")
 	ctrCmd := docker.ContainerCmd{
 		ID: containerID,
 		Command: "docker",
 	}
-	ctrCmd.Detach = detach
+	// Has to be true, because k3scli now it is not a input tty
+	ctrCmd.Detach = true
 	// k3s agent --server https://myserver:6443 --token ${NODE_TOKEN}
 	// port needs tobe determined
 	ctrCmd.Args = []string{

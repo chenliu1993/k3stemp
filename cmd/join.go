@@ -16,7 +16,8 @@ const (
 )
 
 var (
-        defaultPorts = []string{"6443"}
+        // May needs perfecting
+        defaultPorts = []string{"6444"}
 )
 
 var JoinCommand = cli.Command{
@@ -29,10 +30,6 @@ var JoinCommand = cli.Command{
                         Name:  "server-ip",
                         Value: "",
                         Usage: `server container ip`,
-                },
-                &cli.BoolFlag{
-                        Name:  "detach, d",
-                        Usage: `run in detach mode or not`,
                 },
                 &cli.StringFlag{
                         Name:  "token, t",
@@ -51,12 +48,11 @@ var JoinCommand = cli.Command{
 		return join(ctx, context.Args().First(),
 			context.String("server-ip"),
                         context.String("token"),
-                        context.Bool("detach"),
 		)
         },
 }
 
-func join(ctx context.Context, containerID, serverIP, token string, detach bool) error {
+func join(ctx context.Context, containerID, serverIP, token string) error {
         log.Debug("Begin join server node, first checking args")
         if serverIP == "" {
                 log.Fatal("no server ip provided")
@@ -66,13 +62,14 @@ func join(ctx context.Context, containerID, serverIP, token string, detach bool)
         }
         // First run a worker container
         log.Debug("run worker container")
+        // Detach has to be true, other wise the join action cannot execute.
         err := run(ctx, containerID, "worker", true, BASE_IMAGE, defaultPorts)
         if err != nil {
                 log.Debug(err)
                 return err
         }
         // Second join to server container
-        err = utils.Join(containerID, serverIP, token, detach)
+        err = utils.Join(containerID, serverIP, token)
         if err != nil {
                 log.Debug(err)
                 return err
