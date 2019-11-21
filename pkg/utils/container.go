@@ -27,7 +27,8 @@ func Join(containerID, serverIP, token string) error {
 	// Has to be true, because k3scli now it is not a input tty
 	ctrCmd.Detach = true
 	// k3s agent --server https://myserver:6443 --token ${NODE_TOKEN}
-	// port needs tobe determined
+	// since container IP uses a differenet network namespace, here join may leads to failed
+	// needs to handle
 	ctrCmd.Args = []string{
 		"/usr/local/bin/k3s", "agent",
 		"--server", "https://"+serverIP+":6443",

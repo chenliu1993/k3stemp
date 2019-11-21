@@ -22,6 +22,8 @@ func (c *ContainerCmd) Exec() error {
 	args = append(args, c.ID)
 	args = append(args, c.Args...)
 	cmd := exec.Command(c.Command, args...)
+	// applies to the docker -i options
+	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	log.Debug(fmt.Sprintf("begin exec process in container: %s", c.ID))
