@@ -24,13 +24,17 @@ func (c *ContainerCmd) Run() error {
 	if err := checkDir(kubeCfgFile); err != nil {
 		return fmt.Errorf("kubeconfig path failed")
 	}
-	args = append(args, "-p", "6443:6443",
+	args = append(args,
 		"-e", "K3S_KUBECONFIG_OUTPUT="+kubeCfgFile,
 		"-e", "K3S_KUBECONFIG_MODE=666",
 		"-v", "/lib/modules:/lib/modules",
 		"-v", k3sServerFiles+":/var/lib/rancher/k3s",
 		"--name", c.ID)
 	// args = append(args, c.Args...)
+	for _, port := range c.Args {
+		portStr := port+":"+port
+		args = append(args, "-p", portStr)
+	}
 	args = append(args, c.Image)
 	cmd := exec.Command(c.Command, args...)
 	cmd.Stdout = os.Stdout

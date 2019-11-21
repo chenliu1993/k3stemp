@@ -6,12 +6,13 @@ import (
 )
 
 // RunContainer used for wrap exec run
-func RunContainer(containerID string, detach bool, image string) error {
+func RunContainer(containerID string, detach bool, image string, ports []string) error {
 	log.Debug("generating docker run cmd")
 	ctrCmd := docker.ContainerCmd{
 		ID:      containerID,
 		Command: "docker",
 	}
+	ctrCmd.Args = ports
 	ctrCmd.Detach = detach
 	ctrCmd.Image = image
 	return ctrCmd.Run()
@@ -25,6 +26,7 @@ func Join(containerID, serverIP, token string, detach bool) error {
 	}
 	ctrCmd.Detach = detach
 	// k3s agent --server https://myserver:6443 --token ${NODE_TOKEN}
+	// port needs tobe determined
 	ctrCmd.Args = []string{
 		"/usr/local/bin/k3s", "agent",
 		"--server", "https://"+serverIP+":6443",

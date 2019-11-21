@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"errors"
 	"context"
 
 	"github.com/chenliu1993/k3scli/pkg/utils"
@@ -14,8 +13,13 @@ import (
 const (
         BASE_VERSION = "0.10"
         BASE_IMAGE = "cliu2/k3sbase:"+BASE_VERSION
+)
 
-var JoinCommand = cli.Command
+var (
+        defaultPorts = []string{"6443"}
+)
+
+var JoinCommand = cli.Command{
 	Name:  "join",
         Usage: "join a k3sbase container to a existing a server",
         ArgsUsage: `join <--detach> --server <SERVER-IP> --token <TOKEN> to <worker-container-id> <server-container-id`,
@@ -62,13 +66,13 @@ func join(ctx context.Context, containerID, serverIP, token string, detach bool)
         }
         // First run a worker container
         log.Debug("run worker container")
-        err := run(ctx, containerID, "worker", true, BASE_IMAGE)
+        err := run(ctx, containerID, "worker", true, BASE_IMAGE, defaultPorts)
         if err != nil {
                 log.Debug(err)
                 return err
         }
         // Second join to server container
-        err = utils.Join(containerID, serverID, token, detach)
+        err = utils.Join(containerID, serverIP, token, detach)
         if err != nil {
                 log.Debug(err)
                 return err

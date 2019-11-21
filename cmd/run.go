@@ -31,6 +31,10 @@ var RunCommand = cli.Command{
 			Name:  "image",
 			Usage: `image used`,
 		},
+		&cli.StringSliceFlag{
+			Name:  "port, p",
+			Usage: `port mapping between container and host`,
+		},
 	},
 	Action: func(context *cli.Context) error {
 		ctx, err := cliContextToContext(context)
@@ -41,11 +45,12 @@ var RunCommand = cli.Command{
 			context.String("label"),
 			context.Bool("detach"),
 			context.String("image"),
+			context.StringSlice("port"),
 		)
 	},
 }
 
-func run(ctx context.Context, containerID, label string, detach bool, image string) error {
+func run(ctx context.Context, containerID, label string, detach bool, image string, ports []string) error {
 	log.Debug("begin running container")
 	if label == "" {
 		log.Debug("role of container is not set, default to server")
@@ -60,5 +65,8 @@ func run(ctx context.Context, containerID, label string, detach bool, image stri
 	if label == "worker" && strings.Index(image, "node") != -1 {
 		log.Fatal("node image cannot serve as worker")
 	}
-	return utils.RunContainer(containerID, detach, image)
+	if ports == nil {
+		ports = append(ports, "6443")
+	}
+	return utils.RunContainer(containerID, detach, image, ports)
 }

@@ -19,7 +19,8 @@ func (c *ContainerCmd) Exec() error {
 		args = append(args, "-it")
 	}
 
-	args = append(args, c.ID, c.Args...)
+	args = append(args, c.ID)
+	args = append(args, c.Args...)
 	cmd := exec.Command(c.Command, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
