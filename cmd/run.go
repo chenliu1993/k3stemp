@@ -12,7 +12,7 @@ import (
 const (
 	// NODE_VERSION = "0.10"
 	NODE_VERSION = "allsetup"
-	NODE_IMAGE = "cliu2/k3snode:"+BASE_VERSION
+	NODE_IMAGE = "cliu2/k3snode:"+NODE_VERSION
 )
 
 // RunCommand wraps docker run for k3scli
