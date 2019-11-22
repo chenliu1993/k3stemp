@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	docker "github.com/chenliu1993/k3scli/pkg/dockerutils"
 	log "github.com/sirupsen/logrus"
 )
@@ -34,5 +35,6 @@ func Join(containerID, serverIP, token string, detach bool) error {
 		"--server", "https://"+serverIP+":6443",
 		"--token", token,
 	}
+	fmt.Print(ctrCmd.Args)
 	return ctrCmd.Exec()
 }
