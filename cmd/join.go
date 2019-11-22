@@ -27,14 +27,14 @@ var JoinCommand = cli.Command{
         Description: `The join command run a k3sbase container and join it to an existing k3snode server container`,
 	Flags: []cli.Flag{
                 &cli.StringFlag{
-                        Name:  "server-ip",
+                        Name:  "server-id",
                         Value: "",
-                        Usage: `server container ip`,
+                        Usage: `server container id`,
                 },
-                &cli.StringFlag{
-                        Name:  "token, t",
-                        Usage: `server token resides in /var/lib/rancher/k3s/server/node-token on server container`,
-                },
+                // &cli.StringFlag{
+                //         Name:  "token, t",
+                //         Usage: `server token resides in /var/lib/rancher/k3s/server/node-token on server container`,
+                // },
                 &cli.BoolFlag{
                         Name:  "detach, d",
                         Usage: `detach mode`,
@@ -45,22 +45,15 @@ var JoinCommand = cli.Command{
 		if err != nil {
 			return err
 		}
-		return join(ctx, context.Args().First(),
-			context.String("server-ip"),
-                        context.String("token"),
+                return join(ctx, context.Args().First(),
+                        context.String("server-id"),
                         context.Bool("detach"),
 		)
         },
 }
 
-func join(ctx context.Context, containerID, serverIP, token string, detach bool) error {
+func join(ctx context.Context, containerID, serverID string, detach bool) error {
         log.Debug("Begin join server node, first checking args")
-        if serverIP == "" {
-                log.Fatal("no server ip provided")
-        }
-        if token == "" {
-                log.Fatal("no server token provided")
-        }
         // First run a worker container
         log.Debug("run worker container")
         // Detach has to be true, other wise the join action cannot execute.
@@ -69,8 +62,18 @@ func join(ctx context.Context, containerID, serverIP, token string, detach bool)
                 log.Debug(err)
                 return err
         }
+        server, err := utils.GetServerIP(serverID)
+        if err != nil {
+                log.Debug(err)
+                return err
+        }
+        token, err := utils.GetServerToken(serverID)
+        if err!= nil {
+                log.Debug(err)
+                return err
+        }
         // Second join to server container
-        err = utils.Join(containerID, serverIP, token, detach)
+        err = utils.Join(containerID, server, token, detach)
         if err != nil {
                 log.Debug(err)
                 return err

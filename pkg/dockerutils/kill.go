@@ -29,11 +29,11 @@ func (c *ContainerCmd) Kill(signal string) error {
 		return err
 	}
 	// Delete all files under /tmp/k3s/<containerID>
-	if err := os.RemoveAll(filepath.Join(k3sServerFile, c.ID)); err != nil {
+	if err := os.RemoveAll(filepath.Join(K3sServerFile, c.ID)); err != nil {
 		log.Debug(err)
 		return err
 	}
-	if err := os.RemoveAll(filepath.Join(kubeCfgFolder, c.ID)); err != nil {
+	if err := os.RemoveAll(filepath.Join(KubeCfgFolder, c.ID)); err != nil {
 		log.Debug(err)
 		return err
 	}

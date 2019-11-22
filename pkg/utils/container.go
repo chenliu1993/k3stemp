@@ -19,7 +19,7 @@ func RunContainer(containerID string, detach bool, image string, ports []string)
 	return ctrCmd.Run()
 }
 
-func Join(containerID, serverIP, token string, detach bool) error {
+func Join(containerID, server, token string, detach bool) error {
 	log.Debug("generating docker exec cmd")
 	ctrCmd := docker.ContainerCmd{
 		ID: containerID,
@@ -28,11 +28,9 @@ func Join(containerID, serverIP, token string, detach bool) error {
 	// Has to be true, because k3scli now it is not a input tty
 	ctrCmd.Detach = detach
 	// k3s agent --server https://myserver:6443 --token ${NODE_TOKEN}
-	// since container IP uses a differenet network namespace, here join may leads to failed
-	// needs to handle
 	ctrCmd.Args = []string{
 		"k3s", "agent",
-		"--server", "https://"+serverIP+":6443",
+		"--server", server,
 		"--token", token,
 	}
 	fmt.Print(ctrCmd.Args)
@@ -65,3 +63,13 @@ func KillContainer(containerID, signal string) error {
 	return ctrCmd.Kill(signal)
 }
 
+
+func InspectContainerIP(containerID string) (string, error) {
+	ctrCmd := docker.ContainerCmd{
+		ID :containerID,
+		Command: "docker",
+		Args: []string{"inspect", "--format",
+			"'{{.NetworkSettings.IPAddress}}'"},
+	}
+	return ctrCmd.Inspect()
+}

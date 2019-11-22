@@ -19,11 +19,11 @@ func (c *ContainerCmd) Run() error {
 	if c.Detach {
 		args = append(args, "-d")
 	}
-	ctrFiles := filepath.Join(k3sServerFile, c.ID)
+	ctrFiles := filepath.Join(K3sServerFile, c.ID)
 	if err := checkDir(ctrFiles); err != nil {
 		return fmt.Errorf("kubeserver path failed")
 	}
-	ctrCfg := filepath.Join(kubeCfgFolder, c.ID)
+	ctrCfg := filepath.Join(KubeCfgFolder, c.ID)
 	if err := checkDir(ctrCfg); err != nil {
 		return fmt.Errorf("kubeconfig path failed")
 	}
