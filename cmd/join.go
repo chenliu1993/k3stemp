@@ -17,7 +17,7 @@ const (
 
 var (
         // May needs perfecting
-        defaultPorts = []string{"6444"}
+        defaultPorts = []string{}
 )
 
 var JoinCommand = cli.Command{
@@ -35,10 +35,10 @@ var JoinCommand = cli.Command{
                         Name:  "token, t",
                         Usage: `server token resides in /var/lib/rancher/k3s/server/node-token on server container`,
                 },
-                // &cli.StringFlag{
-                //         Name:  "server-name",
-                //         Usage: `server token resides in /var/lib/rancher/k3s/server/node-token on server container`,
-                // },
+                &cli.BoolFlag{
+                        Name:  "detach, d",
+                        Usage: `detach mode`,
+                },
         },
         Action: func(context *cli.Context) error {
 		ctx, err := cliContextToContext(context)
@@ -48,11 +48,12 @@ var JoinCommand = cli.Command{
 		return join(ctx, context.Args().First(),
 			context.String("server-ip"),
                         context.String("token"),
+                        context.Bool("detach"),
 		)
         },
 }
 
-func join(ctx context.Context, containerID, serverIP, token string) error {
+func join(ctx context.Context, containerID, serverIP, token string, detach bool) error {
         log.Debug("Begin join server node, first checking args")
         if serverIP == "" {
                 log.Fatal("no server ip provided")
@@ -69,7 +70,7 @@ func join(ctx context.Context, containerID, serverIP, token string) error {
                 return err
         }
         // Second join to server container
-        err = utils.Join(containerID, serverIP, token)
+        err = utils.Join(containerID, serverIP, token, detach)
         if err != nil {
                 log.Debug(err)
                 return err

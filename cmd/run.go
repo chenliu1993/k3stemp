@@ -73,7 +73,12 @@ func run(ctx context.Context, containerID, label string, detach bool, image stri
 		log.Fatal("node image cannot serve as worker")
 	}
 	if ports == nil {
-		ports = append(ports, "6443")
+		if label == "server" {
+			ports = append(ports, "6443")
+		} else {
+			log.Debug("no ports mapping is defined")
+			ports = []string{}
+		}
 	}
 	return utils.RunContainer(containerID, detach, image, ports)
 }

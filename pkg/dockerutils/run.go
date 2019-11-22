@@ -19,23 +19,24 @@ func (c *ContainerCmd) Run() error {
 	if c.Detach {
 		args = append(args, "-d")
 	}
-	if err := checkDir(filepath.Join(k3sServerFile, c.ID)); err != nil {
+	ctrFiles := filepath.Join(k3sServerFile, c.ID)
+	if err := checkDir(ctrFiles); err != nil {
 		return fmt.Errorf("kubeserver path failed")
 	}
-	if err := checkDir(filepath.Join(kubeCfgFolder, c.ID)); err != nil {
+	ctrCfg := filepath.Join(kubeCfgFolder, c.ID)
+	if err := checkDir(ctrCfg); err != nil {
 		return fmt.Errorf("kubeconfig path failed")
 	}
-	args = append(args,
-		"-e", "K3S_KUBECONFIG_OUTPUT="+filepath.Join(kubeCfgFolder, c.ID, "kubeconfig.yaml"),
-		"-e", "K3S_KUBECONFIG_MODE=666",
-		"-v", "/lib/modules:/lib/modules",
-		"-v", filepath.Join(k3sServerFile, c.ID)+":/var/lib/rancher/k3s",
-		"--name", c.ID)
-	// args = append(args, c.Args...)
 	for _, port := range c.Args {
 		portStr := port+":"+port
 		args = append(args, "-p", portStr)
 	}
+	args = append(args,
+		"-e", "K3S_KUBECONFIG_OUTPUT="+filepath.Join(ctrCfg, "kubeconfig.yaml"),
+		"-e", "K3S_KUBECONFIG_MODE=666",
+		"-v", "/lib/modules:/lib/modules",
+		"-v", ctrFiles+":/var/lib/rancher/k3s",
+		"--name", c.ID)
 	args = append(args, c.Image)
 	cmd := exec.Command(c.Command, args...)
 	cmd.Stdout = os.Stdout
