@@ -15,6 +15,8 @@ import (
 var runtimeCommands = []*cli.Command{
 	&cmd.RunCommand,
 	&cmd.JoinCommand,
+	&cmd.AttachCommand,
+	&cmd.KillCommand,
 }
 
 // func beforeSubcommands(c *cli.Context) error {

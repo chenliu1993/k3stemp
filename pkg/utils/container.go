@@ -38,3 +38,30 @@ func Join(containerID, serverIP, token string, detach bool) error {
 	fmt.Print(ctrCmd.Args)
 	return ctrCmd.Exec()
 }
+
+
+func AttachContainer(containerID string) error {
+	log.Debug("generating docker exec cmd")
+	ctrCmd := docker.ContainerCmd{
+		ID: containerID,
+		Command: "docker",
+	}
+	// Has to be false, because attach means interact with container
+	ctrCmd.Detach = false
+	// just a sh command
+	ctrCmd.Args = []string{
+		"/bin/sh",
+	}
+	return ctrCmd.Exec()
+}
+
+
+func KillContainer(containerID, signal string) error {
+	log.Debug("generating docker exec cmd")
+	ctrCmd := docker.ContainerCmd{
+		ID: containerID,
+		Command: "docker",
+	}
+	return ctrCmd.Kill(signal)
+}
+
