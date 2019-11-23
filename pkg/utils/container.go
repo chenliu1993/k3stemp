@@ -3,17 +3,36 @@ package utils
 import (
 	"fmt"
 	docker "github.com/chenliu1993/k3scli/pkg/dockerutils"
+	clusterconfig "github.com/chenliu1993/k3scli/pkg/config/cluster"
 	log "github.com/sirupsen/logrus"
+)
+const (
+	// NODE_VERSION = "0.10"
+	NODE_VERSION = "allsetup"
+	NODE_IMAGE = "cliu2/k3snode:"+NODE_VERSION
+
+	BASE_VERSION = "0.10"
+	BASE_IMAGE = "cliu2/k3sbase:"+BASE_VERSION
 )
 
 // RunServerContainer used for wrap exec run
-func RunContainer(containerID string, detach bool, image string, ports []string) error {
+func RunContainer(containerID string, label string, detach bool, image string, ports []string, cluster string) error {
 	log.Debug("generating docker run cmd")
 	ctrCmd := docker.ContainerCmd{
 		ID:      containerID,
 		Command: "docker",
 	}
-	ctrCmd.Args = ports
+	ctrCmd.Args = []string{}
+	for _, port := range ports {
+		portStr := port+":"+port
+		ctrCmd.Args = append(ctrCmd.Args, "-p", portStr)
+	}
+	if cluster != "" {
+		ctrCmd.Args =  append(ctrCmd.Args, "--label", fmt.Sprintf("%s=%s", clusterconfig.ClusterLabelKey, cluster))
+	}
+	if label != "" {
+		ctrCmd.Args = append(ctrCmd.Args, "--label", fmt.Sprintf("%s=%s", clusterconfig.ClusterLabelKey, cluster+"-"+label))
+	}
 	ctrCmd.Detach = detach
 	ctrCmd.Image = image
 	return ctrCmd.Run()

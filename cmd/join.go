@@ -10,11 +10,6 @@ import (
 // Join command combines run and join.
 // Used to join a k3s worker node to a server
 
-const (
-        BASE_VERSION = "0.10"
-        BASE_IMAGE = "cliu2/k3sbase:"+BASE_VERSION
-)
-
 var (
         // May needs perfecting
         defaultPorts = []string{}
@@ -57,7 +52,7 @@ func join(ctx context.Context, containerID, serverID string, detach bool) error 
         // First run a worker container
         log.Debug("run worker container")
         // Detach has to be true, other wise the join action cannot execute.
-        err := run(ctx, containerID, "worker", true, BASE_IMAGE, defaultPorts)
+        err := run(ctx, containerID, "worker", true, utils.BASE_IMAGE, defaultPorts, "")
         if err != nil {
                 log.Debug(err)
                 return err
@@ -73,12 +68,7 @@ func join(ctx context.Context, containerID, serverID string, detach bool) error 
                 return err
         }
         // Second join to server container
-        err = utils.Join(containerID, server, token, detach)
-        if err != nil {
-                log.Debug(err)
-                return err
-        }
-        return nil
+        return utils.Join(containerID, server, token, detach)
 }
 
 	

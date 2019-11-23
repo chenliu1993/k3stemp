@@ -27,16 +27,18 @@ func (c *ContainerCmd) Run() error {
 	if err := checkDir(ctrCfg); err != nil {
 		return fmt.Errorf("kubeconfig path failed")
 	}
-	for _, port := range c.Args {
-		portStr := port+":"+port
-		args = append(args, "-p", portStr)
-	}
+	
 	args = append(args,
 		"-e", "K3S_KUBECONFIG_OUTPUT="+filepath.Join(ctrCfg, "kubeconfig.yaml"),
 		"-e", "K3S_KUBECONFIG_MODE=666",
 		"-v", "/lib/modules:/lib/modules",
 		"-v", ctrFiles+":/var/lib/rancher/k3s",
-		"--name", c.ID)
+	)
+	args = append(args, c.Args...)
+	if c.ID != "" {
+		args = append(args, 
+			"--name", c.ID)
+	}
 	args = append(args, c.Image)
 	cmd := exec.Command(c.Command, args...)
 	cmd.Stdout = os.Stdout

@@ -13,10 +13,13 @@ import (
 )
 
 var runtimeCommands = []*cli.Command{
+	// container-level
 	&cmd.RunCommand,
 	&cmd.JoinCommand,
 	&cmd.AttachCommand,
 	&cmd.KillCommand,
+	// cluster-level
+	&cmd.CreateCommand,
 }
 
 // func beforeSubcommands(c *cli.Context) error {

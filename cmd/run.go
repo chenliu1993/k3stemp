@@ -9,12 +9,6 @@ import (
 	"github.com/urfave/cli"
 )
 
-const (
-	// NODE_VERSION = "0.10"
-	NODE_VERSION = "allsetup"
-	NODE_IMAGE = "cliu2/k3snode:"+NODE_VERSION
-)
-
 // RunCommand wraps docker run for k3scli
 var RunCommand = cli.Command{
 	Name:  "run",
@@ -41,6 +35,10 @@ var RunCommand = cli.Command{
 			Name:  "port, p",
 			Usage: `port mapping between container and host`,
 		},
+		&cli.StringFlag{
+			Name: "cluster",
+			Usage: `cluster this contaienr belongs to`,
+		},
 	},
 	Action: func(context *cli.Context) error {
 		ctx, err := cliContextToContext(context)
@@ -52,11 +50,12 @@ var RunCommand = cli.Command{
 			context.Bool("detach"),
 			context.String("image"),
 			context.StringSlice("port"),
+			context.String("cluster"),
 		)
 	},
 }
 
-func run(ctx context.Context, containerID, label string, detach bool, image string, ports []string) error {
+func run(ctx context.Context, containerID, label string, detach bool, image string, ports []string, cluster string) error {
 	log.Debug("begin running container")
 	if label == "" {
 		log.Debug("role of container is not set, default to server")
@@ -64,13 +63,16 @@ func run(ctx context.Context, containerID, label string, detach bool, image stri
 	}
 	if image == "" {
 		log.Debug("k3s image not set, default to node")
-		image = NODE_IMAGE
+		image = utils.NODE_IMAGE
 	}
 	if label == "server" && strings.Index(image, "base") != -1 {
 		log.Fatal("base image cannot serve as server")
 	}
 	if label == "worker" && strings.Index(image, "node") != -1 {
 		log.Fatal("node image cannot serve as worker")
+	}
+	if containerID == "" {
+		log.Debug("no container ID, will generate a random one by docker")
 	}
 	if ports == nil {
 		if label == "server" {
@@ -80,5 +82,8 @@ func run(ctx context.Context, containerID, label string, detach bool, image stri
 			ports = []string{}
 		}
 	}
-	return utils.RunContainer(containerID, detach, image, ports)
+	if cluster == "" {
+		log.Debug("no cluster specified")
+	}
+	return utils.RunContainer(containerID, label, detach, image, ports, cluster)
 }
