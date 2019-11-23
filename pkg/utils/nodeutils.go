@@ -5,8 +5,6 @@ import (
 	"github.com/google/uuid"
 	// "os"
 	"os/exec"
-	"bytes"
-	"bufio"
 	"path/filepath"
 	"io/ioutil"
 	"strings"
@@ -53,19 +51,6 @@ func GetServerIP(containerID string) (string, error) {
 	return server, nil
 }
 
-
-// ExecOutput save the output to strings
-func ExecOutput(cmd exec.Cmd) (lines []string,err  error) {
-	var buf bytes.Buffer
-	cmd.Stdout = &buf
-	err = cmd.Run()
-	scanner := bufio.NewScanner(&buf)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	return lines,err
-}
-
 // GetClusterNames and returns it 
 func GetClusterNames(clusterName string) (lines []string, err error) {
 	// For now, only supports one server, so server name will be based on th cluster name
@@ -80,7 +65,7 @@ func GetClusterNames(clusterName string) (lines []string, err error) {
 		// format to include the cluster name
 		"--format", `{{.Names}}`,
 	)
-	lines, err = ExecOutput(*cmd)
+	lines, err = docker.ExecOutput(*cmd,false)
 	if err != nil {
 		return nil, err
 	}

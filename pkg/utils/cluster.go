@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	clusterconfig "github.com/chenliu1993/k3scli/pkg/config/cluster"
 )
@@ -23,7 +22,6 @@ func CreateCluster(clusterName string, cluster clusterconfig.Cluster) error {
 	if err != nil {
 		return err
 	}
-	fmt.Print(server)
 	serverToken, err := GetServerToken(serverName)
 	if err != nil {
 		return err
