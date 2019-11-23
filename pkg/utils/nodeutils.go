@@ -27,7 +27,7 @@ import (
 // GetServerToken get server token content
 func GetServerToken(containerID string) (string, error) {
 	log.Debug("read token out from k3s server files")
-	time.Sleep(7*time.Second)
+	time.Sleep(10*time.Second)
 	fileInfo, err := os.Stat(filepath.Join(docker.K3sServerFile, containerID, "server"))
 	if err != nil {
 		fmt.Print(err)
