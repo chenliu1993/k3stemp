@@ -2,8 +2,9 @@ package utils
 
 import (
 	"fmt"
+	"time"
 	"github.com/google/uuid"
-	// "os"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"io/ioutil"
@@ -26,6 +27,13 @@ import (
 // GetServerToken get server token content
 func GetServerToken(containerID string) (string, error) {
 	log.Debug("read token out from k3s server files")
+	time.Sleep(7*time.Second)
+	fileInfo, err := os.Stat(filepath.Join(docker.K3sServerFile, containerID, "server"))
+	if err != nil {
+		fmt.Print(err)
+		return "", err
+	}
+	fmt.Print(fileInfo.Name())
 	// token place 
 	token := filepath.Join(docker.K3sServerFile, containerID, "server", "token")
 	bytes, err := ioutil.ReadFile(token)
