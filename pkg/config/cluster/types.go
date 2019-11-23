@@ -6,6 +6,7 @@ import (
 
 const (
 	ClusterLabelKey = "kind.k3s.cluster"
+	ClusterRole = "kind.k3s.cluster.role"
 )
 
 const (

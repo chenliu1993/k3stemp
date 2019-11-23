@@ -20,6 +20,7 @@ var runtimeCommands = []*cli.Command{
 	&cmd.KillCommand,
 	// cluster-level
 	&cmd.CreateCommand,
+	&cmd.DeleteCommand,
 }
 
 // func beforeSubcommands(c *cli.Context) error {

@@ -31,7 +31,7 @@ func RunContainer(containerID string, label string, detach bool, image string, p
 		ctrCmd.Args =  append(ctrCmd.Args, "--label", fmt.Sprintf("%s=%s", clusterconfig.ClusterLabelKey, cluster))
 	}
 	if label != "" {
-		ctrCmd.Args = append(ctrCmd.Args, "--label", fmt.Sprintf("%s=%s", clusterconfig.ClusterLabelKey, cluster+"-"+label))
+		ctrCmd.Args = append(ctrCmd.Args, "--label", fmt.Sprintf("%s=%s", clusterconfig.ClusterRole, cluster+"-"+label))
 	}
 	ctrCmd.Detach = detach
 	ctrCmd.Image = image

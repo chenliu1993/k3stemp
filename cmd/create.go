@@ -3,6 +3,8 @@ package cmd
 // Create command does not create  a command, it is used 
 // to create a cluster
 import (
+	"fmt"
+	"sort"
 	"context"
 	"github.com/chenliu1993/k3scli/pkg/utils"
 	clusterconfig "github.com/chenliu1993/k3scli/pkg/config/cluster"
@@ -10,7 +12,7 @@ import (
 	"github.com/urfave/cli"
 
 )
-// Attach command attach io to a container
+// Create command creates a cluster
 
 var CreateCommand = cli.Command{
 	Name:  "create",
@@ -46,6 +48,10 @@ func createcluster(ctx context.Context, clusterName, config string) error {
 				log.Fatal(err)
 			}
 		}
+		sort.Slice(cluster.Nodes, func(i int, j int) bool {
+			return cluster.Nodes[i].Label < cluster.Nodes[j].Label
+		})
+		fmt.Print(cluster.Nodes)
         err = utils.CreateCluster(clusterName, cluster)
         if err != nil {
                 log.Debug(err)

@@ -7,8 +7,8 @@ var (
 	DefaultClusterConfig = Cluster{
 		Name: DefaultClusterName ,
 		Nodes: []Node {
-			{Label: "server"},
 			{Label: "worker"},
+			{Label: "server"},
 			{Label: "worker"},
 		},
 	}

@@ -7,12 +7,12 @@ import (
 
 
 // CreateCluster creates a cluster given the default name
-func CreateCluster(clusterName string, cluster clusterconfig.Cluster) error {
+func CreateCluster(clusterName string, cluster clusterconfig.Cluster) (err error) {
 	log.Debug("Creating cluster...")
 	var name string
 	// First running server container
 	serverName := GenCtrName()
-	err := RunContainer(serverName, "server", true, NODE_IMAGE, []string{"6443"}, clusterName)
+	err = RunContainer(serverName, "server", true, NODE_IMAGE, []string{"6443"}, clusterName)
 	if err != nil {
 		return err
 	}
@@ -39,6 +39,23 @@ func CreateCluster(clusterName string, cluster clusterconfig.Cluster) error {
 		}
 		node.Name = name
 		if err := Join(name, server, serverToken, true); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// DeleteCluster first gets all cluster's container names, then kill them one-by-one
+func DeleteCluster(clusterName string) error {
+	log.Debugf("get all containers under %s", clusterName)
+	names, err := GetClusterNames(clusterName)
+	if err != nil {
+		return err
+	}
+	for _, name := range names {	
+		log.Debugf("killing container: %s", name)
+		err := KillContainer(name, "sigterm")
+		if err != nil {
 			return err
 		}
 	}

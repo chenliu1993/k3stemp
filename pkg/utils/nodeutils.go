@@ -73,14 +73,14 @@ func GetClusterNames(clusterName string) (lines []string, err error) {
 		// format to include the cluster name
 		"--format", `{{.Names}}`,
 	)
-	lines, err = docker.ExecOutput(*cmd,false)
+	lines, err = docker.ExecOutput(*cmd, false)
 	if err != nil {
 		return nil, err
 	}
 	// currentlt only supports one server
-	if len(lines) != 1 {
-		return nil, fmt.Errorf("k3scli don't support multiserver now...")
-	}
+	// if len(lines) != 1 {
+	// 	return nil, fmt.Errorf("k3scli don't support multiserver now...")
+	// }
 	return lines, nil
 }
 
